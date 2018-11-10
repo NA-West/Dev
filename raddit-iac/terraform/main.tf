@@ -1,7 +1,7 @@
 resource "google_compute_instance" "raddit" {
   name         = "raddit-instance"
   machine_type = "n1-standard-1"
-  zone         = "us-central1-b"
+  zone         = "us-central-1-a"
 
   # boot disk specifications
   boot_disk {
