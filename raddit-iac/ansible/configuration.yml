@@ -61,5 +61,6 @@ tasks:
         enabled: yes
 
     - name: Download Unit File
-      get_url:
-        url: 
+      get_url: 
+        url: https://raw.githubusercontent.com/NA-West/Dev/master/raddit-iac/raddit.service
+        dest: /etc/systemd/system/raddit.service
