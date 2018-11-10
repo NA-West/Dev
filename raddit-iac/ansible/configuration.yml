@@ -1,0 +1,65 @@
+echo "  ----- install mongodb -----  "
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" > /etc/apt/sources.list.d/mongodb-org-3.2.list
+apt-get update
+apt-get install -y mongodb-org
+
+echo "  ----- start mongodb -----  "
+systemctl start mongod
+systemctl enable mongod
+
+echo "  ----- copy unit file for application -----  "
+wget https://gist.githubusercontent.com/Artemmkin/ce82397cfc69d912df9cd648a8d69bec/raw/7193a36c9661c6b90e7e482d256865f085a853f2/raddit.service
+mv raddit.service /etc/systemd/system/raddit.service
+sed -i 's/raddit-user/bob/g' /etc/systemd/system/raddit.service
+
+
+
+name: Configure Raddit App Instance
+hosts: all
+gather_facts: false
+become: true
+
+pre_tasks:
+    - name: Install python for Ansible
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+      changed_when: false
+
+tasks:
+    - name: Install Ruby
+      apt: "name={{ item }} state=present"
+      with_items:
+        - ruby-full
+        - build-essential
+
+    - name: Install Bundler
+      gem: 
+        name: bundler
+        state: present
+        user_install: no
+
+    - name: Add APT Key
+      apt_key:
+        id: EA312927
+        keyserver: keyserver.ubuntu.com
+
+    - name: Add MongoDB repo
+      apt_repository:
+        repo: deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse
+        state: present
+
+    - name: Install MongoDB package
+      apt:
+        name: mongodb-org
+        state: present
+        update_cache: yes
+      
+    - name: Start MongoDB
+      systemd:
+        name: mongod
+        state: started
+        enabled: yes
+
+    - name: Download Unit File
+      get_url:
+        url: 
