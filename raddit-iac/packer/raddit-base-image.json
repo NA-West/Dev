@@ -3,7 +3,7 @@
       {
         "type": "googlecompute",
         "project_id": "reflecting-surf-221919",
-        "zone": "us-central-1-a",
+        "zone": "us-central1-a",
         "machine_type": "g1-small",
         "source_image_family": "ubuntu-1604-lts",
         "image_name": "raddit-base-{{isotime `20060102-150405`}}",
